@@ -1,0 +1,84 @@
+
+<head>
+    <script type="module">
+        import {breakout} from "./breakout.js";
+        let game;
+        let gameInterval;
+        let gamePaused = false;
+        let updateInterval;
+        
+        function init() {
+            document.getElementById('start-button').addEventListener('click', () => {
+              startGame();
+            });
+            document.getElementById('pause').style.display = 'none';
+        }
+
+        
+        function startGame(){
+            const canvas = document.getElementById('atari');
+            game = new breakout(canvas, keyMap);
+            updateInterval = setInterval(update, 0);
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('instructions').style.display = 'none';
+        }
+        
+        
+        function update() {
+            game.mainLoop();
+        }
+        window.onload = init;
+        
+        const keyMap = {};
+        
+        function handleKeyPress(e) {
+            if (e.key === ' ') {
+                console.log(game.gameOver)
+                gamePaused = !gamePaused;
+                if (gamePaused===false && game.gameOver === false) {
+                    updateInterval = setInterval(update, 0);
+                    document.getElementById('level').style.display = '';
+                    document.getElementById('score').style.display = '';
+                    document.getElementById('lives').style.display = '';
+                    document.getElementById('pause').style.display = 'none';
+                } 
+                if (gamePaused===true && game.gameOver === false) {
+                    clearInterval(updateInterval);
+                    document.getElementById('level').style.display = 'none';
+                    document.getElementById('score').style.display = 'none';
+                    document.getElementById('lives').style.display = 'none';
+                    document.getElementById('pause').style.display = '';
+                }
+            } 
+            else{
+                keyMap[e.key] = true;
+            }
+            //console.log(keyMap);
+        }
+        
+        function handleKeyUp(e) {
+            keyMap[e.key] = false;
+        }
+        
+        window.onkeydown = handleKeyPress;
+        window.onkeyup = handleKeyUp;
+    </script>
+</head>
+
+<body>
+    <div id="start-screen" style="display: ;">
+        <h1>Welcome to Breakout</h1>
+        <p id="instructions">- Use the arrows to move around<br>- The white bricks have to be hit multiple times depending on the level <br> - Breaking the small bricks increases paddle size<br>- Press the spacebar to pause and resume</p>
+        <button id="start-button">Start</button>
+    </div>
+    
+    <h1 id="level"></h1>
+    <h1 id="pause">PAUSED</h1>
+    <p id="score"></p>
+    <p id="lives"></p>
+    <p id="fps"></p>
+    <h1 id="gameover"></h1>
+    
+    
+    <canvas style="border: 1px solid black" id="atari" />
+</body>
